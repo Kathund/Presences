@@ -18,6 +18,15 @@ presence.on("UpdateData", async () => {
 		return Math.floor(Date.now() / 1000);
 	}
 
+	async function getStrings() {
+		return presence.getStrings(
+			{
+				browse: "general.browsing",
+			},
+			await presence.getSetting<string>("lang").catch(() => "en")
+		);
+	}
+
 	/**
 	 * Get's the setting specified and replaces %search% with the search input or %content% when indicated.
 	 * @param {String} settingName Name of the setting
@@ -69,6 +78,12 @@ presence.on("UpdateData", async () => {
 					.textContent
 			);
 		} else presenceData.details = await handleFormatting("standardSearch");
+	}
+
+	const privacy = await presence.getSetting<string>("privacy");
+	if (privacy) {
+		const strings = await getStrings();
+		presenceData.details = strings.browse;
 	}
 
 	if (presenceData.details) presence.setActivity(presenceData);
